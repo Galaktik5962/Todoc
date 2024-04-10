@@ -18,21 +18,15 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.room.RoomDatabase;
 
 import com.cleanup.todoc.R;
-import com.cleanup.todoc.database.TodocDatabase;
 import com.cleanup.todoc.injection.ViewModelFactory;
 import com.cleanup.todoc.models.Project;
 import com.cleanup.todoc.models.Task;
-import com.cleanup.todoc.repositories.ProjectDataRepository;
-import com.cleanup.todoc.repositories.TaskDataRepository;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import java.util.concurrent.Executors;
 
 /**
  * <p>Home activity of the application which is displayed when the user opens the app.</p>
@@ -42,7 +36,11 @@ import java.util.concurrent.Executors;
  */
 public class MainActivity extends AppCompatActivity implements TasksAdapter.DeleteTaskListener {
 
-  private TaskViewModel taskViewModel;
+    /**
+     * The ViewModel which handles the business logic of the application
+     * and the communication of the data between the database and the UI.
+     */
+    private TaskViewModel taskViewModel;
 
     /**
      * The adapter which handles the list of tasks
@@ -77,7 +75,6 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
      * The RecyclerView which displays the list of tasks
      */
     // Suppress warning is safe because variable is initialized in onCreate
-    @SuppressWarnings("NullableProblems")
     @NonNull
     private RecyclerView listTasks;
 
@@ -85,16 +82,19 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
      * The TextView displaying the empty state
      */
     // Suppress warning is safe because variable is initialized in onCreate
-    @SuppressWarnings("NullableProblems")
     @NonNull
     private TextView lblNoTasks;
+
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // Initialise le ViewModel avec le repository
-        taskViewModel = new ViewModelProvider(this, new ViewModelFactory(this)).get(TaskViewModel.class);
+        // Getting ViewModelFactory instance
+        ViewModelFactory factory = ViewModelFactory.getInstance(this);
+
+        // Using the ViewModelFactory instance to get the TaskViewModel instance
+        taskViewModel = new ViewModelProvider(this, factory).get(TaskViewModel.class);
         this.taskViewModel.init();
 
         setContentView(R.layout.activity_main);
@@ -104,7 +104,7 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
 
         listTasks.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
 
-        listTasks.setAdapter(adapter);
+        listTasks.setAdapter(adapter); // Set the adapter to the RecyclerView
 
         findViewById(R.id.fab_add_task).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -113,9 +113,9 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
             }
         });
 
-        observeProjects(); // Observer les projets
+        observeProjects(); // Observe the projects
 
-        observeTasks(); // Observer les tâches
+        observeTasks(); // Observe the tasks
     }
 
     private void observeTasks() {
@@ -166,8 +166,10 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
      * @param dialogInterface the current displayed dialog
      */
     private void onPositiveButtonClick(DialogInterface dialogInterface) {
+
         // If dialog is open
         if (dialogEditText != null && dialogSpinner != null) {
+
             // Get the name of the task
             String taskName = dialogEditText.getText().toString();
 
@@ -181,10 +183,9 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
             if (taskName.trim().isEmpty()) {
                 dialogEditText.setError(getString(R.string.empty_task_name));
             }
+
             // If both project and name of the task have been set
             else if (taskProject != null) {
-
-
 
                 Task task = new Task(
                         taskProject.getId(),
@@ -196,11 +197,13 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
 
                 dialogInterface.dismiss();
             }
+
             // If name has been set, but project has not been set (this should never occur)
             else{
                 dialogInterface.dismiss();
             }
         }
+
         // If dialog is already closed
         else {
             dialogInterface.dismiss();
@@ -307,7 +310,7 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
      * Sets the data of the Spinner with projects to associate to a new task
      */
     private void populateDialogSpinner() {
-//        List<Project> allProjects = taskViewModel.getAllProjects().getValue();
+
         taskViewModel.getAllProjects().observe(this, projects -> {
             final ArrayAdapter<Project> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, projects);
             adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);

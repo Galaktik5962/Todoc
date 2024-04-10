@@ -8,25 +8,53 @@ import androidx.annotation.Nullable;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
+
+/**
+ * Represents the database table "Project" in the application.
+ * This class defines the structure of a project and provides methods for accessing and manipulating project data.
+ */
 @Entity
 
 public class Project {
 
+    /**
+     * Unique identifier of the project.
+     */
     @PrimaryKey
 
     private long id;
+
+    /**
+     * Name of the project.
+     */
     @NonNull
     private String name;
+
+    /**
+     * Color of the project.
+     */
     @ColorInt
     private int color;
 
-
+    /**
+     * Constructor for creating a Project object.
+     *
+     * @param id    Unique identifier of the project.
+     * @param name  Name of the project.
+     * @param color Color of the project.
+     */
     public Project(long id, @NonNull String name, @ColorInt int color) {
         this.id = id;
         this.name = name;
         this.color = color;
     }
 
+    /**
+     * Retrieves an array containing all available projects.
+     * This method is used only for database initialization.
+     *
+     * @return An array of Project objects representing all available projects.
+     */
     @NonNull
     public static Project[] getAllProjects() {
         return new Project[]{
@@ -36,6 +64,12 @@ public class Project {
         };
     }
 
+    /**
+     * Retrieves the project with the specified identifier.
+     *
+     * @param id The unique identifier of the project.
+     * @return The Project object with the specified identifier, or null if no project is found.
+     */
     @Nullable
     public static Project getProjectById(long id) {
         for (Project project : getAllProjects()) {
@@ -45,6 +79,12 @@ public class Project {
         return null;
     }
 
+    /**
+     * Converts the Project object into a ContentValues object for use in the database.
+     * The attributes of the Project object are inserted as key-value pairs into ContentValues.
+     *
+     * @return ContentValues containing the values of the attributes of the Project object.
+     */
     public ContentValues toContentValues() {
         ContentValues contentValues = new ContentValues();
         contentValues.put("id", getId());
@@ -64,6 +104,11 @@ public class Project {
         return name;
     }
 
+    /**
+     * Provides a textual representation of the project.
+     *
+     * @return The name of the project.
+     */
     @Override
     @NonNull
     public String toString() {

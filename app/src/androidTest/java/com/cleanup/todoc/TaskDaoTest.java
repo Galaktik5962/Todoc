@@ -19,6 +19,7 @@ import org.junit.runner.RunWith;
 
 import java.util.List;
 
+
 @RunWith(AndroidJUnit4.class)
 
 public class TaskDaoTest {
@@ -80,6 +81,11 @@ public class TaskDaoTest {
 
         // BEFORE : Adding demo project & demo tasks
         this.database.projectDao().createProject(PROJECT_DEMO);
+
+        NEW_TASK_1.setProjectId(PROJECT_ID);
+        NEW_TASK_2.setProjectId(PROJECT_ID);
+        NEW_TASK_3.setProjectId(PROJECT_ID);
+
         this.database.taskDao().insertTask(NEW_TASK_1);
         this.database.taskDao().insertTask(NEW_TASK_2);
         this.database.taskDao().insertTask(NEW_TASK_3);

@@ -13,7 +13,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.cleanup.todoc.R;
 import com.cleanup.todoc.models.Project;
 import com.cleanup.todoc.models.Task;
-import com.cleanup.todoc.repositories.ProjectDataRepository;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -48,11 +47,10 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.TaskViewHold
      *
      * @param deleteTaskListener the listener for when a task needs to be deleted
      */
-
     TasksAdapter(@NonNull final DeleteTaskListener deleteTaskListener) {
         this.deleteTaskListener = deleteTaskListener;
-        this.projects = new ArrayList<>();
-        this.tasks = new ArrayList<>();
+        this.projects = new ArrayList<>(); // Initializing an initial empty list of projects
+        this.tasks = new ArrayList<>(); // Initializing an initial empty list of tasks
     }
 
     /**
@@ -61,10 +59,15 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.TaskViewHold
      * @param tasks the list of tasks the adapter deals with to set
      */
     void updateTasks(@NonNull final List<Task> tasks) {
-        this.tasks = tasks;
-        notifyDataSetChanged();
+        this.tasks = tasks;  // Assign the new list of tasks to the adapter's list of tasks
+        notifyDataSetChanged(); // Notify the adapter that the data has changed, triggering a refresh of the RecyclerView
     }
 
+    /**
+     * Updates the list of projects the adapter deals with.
+     *
+     * @param projects the list of projects the adapter deals with to set
+     */
     void updateProjects(@NonNull final List<Project> projects) {
         this.projects = projects;
         notifyDataSetChanged();
@@ -163,27 +166,31 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.TaskViewHold
          * @param task the task to bind in the item view
          */
         void bind(Task task) {
-            lblTaskName.setText(task.getName());
-            imgDelete.setTag(task);
+            lblTaskName.setText(task.getName()); // Sets the task name into the TextView lblTaskName
+            imgDelete.setTag(task); // Assigns the task as the tag of the delete image imgDelete
 
-            Project taskProject = null;
+            Project taskProject = null; // Initializes taskProject to null to store the project associated with the task, if any
 
-            // je crée une boucle pour parcourir la liste des projets et je compare l'id du projet avec l'id du projet de la tâche
-            //Liste de projet =  private List<Project> projects;
+            // Iterates through the list of projects to find the project corresponding to the task's project ID
             for (Project project : projects) {
                 if (project.getId() == task.getProjectId()) {
+                    // If the project ID matches the task's project ID, stores the project in taskProject
                     taskProject = project;
                 }
             }
 
+            // Checks if a project is found for the task
             if (taskProject != null) {
+                // If a project is found, sets the color of the project image imgProject
+                // with the project's color and displays the project name in lblProjectName
                 imgProject.setSupportImageTintList(ColorStateList.valueOf(taskProject.getColor()));
                 lblProjectName.setText(taskProject.getName());
             } else {
+                // If no project is found, hides the project image imgProject
+                // and clears the text of lblProjectName
                 imgProject.setVisibility(View.INVISIBLE);
                 lblProjectName.setText("");
             }
-
         }
     }
 }
